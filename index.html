@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cre8scent — redesign mockup (homepage, nav, product card, PDP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F8F5F0;
+    --cream-deep: #F1EBE1;
+    --ink: #1B1210;
+    --ink-70: rgba(27,18,16,.7);
+    --ink-55: rgba(27,18,16,.55);
+    --ink-40: rgba(27,18,16,.4);
+    --hair: rgba(27,18,16,.08);
+    --hair-strong: rgba(27,18,16,.14);
+    --gold: #8A6A3B;
+    --serif: "Cinzel", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--cream); color: var(--ink);
+    font-family: var(--sans); font-size: 15px; line-height: 1.55;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 768px) { .wrap { padding: 0 40px; } }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -.01em; margin: 0; }
+  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-55); }
+  .rule { border-top: 1px solid var(--hair); }
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- review banner (not part of the design) ---------- */
+  .reviewbar { background: #1B1210; color: #F8F5F0; font-size: 13px; }
+  .reviewbar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 10px 24px; }
+  .reviewbar b { font-weight: 600; }
+  .tag { border: 1px solid rgba(248,245,240,.35); border-radius: 999px; padding: 2px 10px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* ---------- announcement bar ---------- */
+  .announce { background: var(--ink); color: var(--cream); font-size: 12.5px; letter-spacing: .02em; }
+  .announce .wrap { display: flex; gap: 24px; justify-content: space-between; padding: 9px 24px; }
+  .announce span:last-child { opacity: .72; }
+  @media (max-width: 640px) { .announce span:last-child { display: none; } }
+
+  /* ---------- header + audience nav ---------- */
+  header { background: var(--cream); border-bottom: 1px solid var(--hair); position: sticky; top: 0; z-index: 40; }
+  .toprow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; }
+  .logo { font-family: var(--serif); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; }
+  .top-utils { display: flex; gap: 22px; font-size: 13px; color: var(--ink-70); align-items: center; }
+  .top-utils a:hover { color: var(--ink); }
+  .searchbar { flex: 1; max-width: 420px; display: flex; border: 1px solid var(--hair-strong); }
+  .searchbar input { flex: 1; border: 0; background: transparent; padding: 10px 14px; font: inherit; color: inherit; outline: none; }
+  .searchbar button { border: 0; border-left: 1px solid var(--hair-strong); background: transparent; padding: 0 16px; font: inherit; cursor: pointer; color: var(--ink-70); }
+  @media (max-width: 900px) { .searchbar { display: none; } }
+  .audnav { display: flex; gap: 28px; padding: 12px 0 0; font-size: 14px; overflow-x: auto; scrollbar-width: none; }
+  .audnav::-webkit-scrollbar { display: none; }
+  .audnav a { padding-bottom: 12px; border-bottom: 2px solid transparent; white-space: nowrap; color: var(--ink-70); }
+  .audnav a[aria-current] { color: var(--ink); border-bottom-color: var(--ink); }
+  .audnav a:hover { color: var(--ink); }
+  .audnav .bundle { color: var(--gold); }
+
+  /* ---------- hero ---------- */
+  .hero { display: grid; gap: 0; border-bottom: 1px solid var(--hair); }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1.05fr .95fr; } }
+  .hero-copy { padding: 56px 0 48px; align-self: center; }
+  .hero h1 { font-size: clamp(34px, 5.2vw, 58px); line-height: 1.04; margin: 18px 0 0; }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero p.sub { color: var(--ink-70); font-size: 16px; max-width: 46ch; margin: 18px 0 0; }
+  .offer { display: flex; gap: 26px; align-items: flex-end; margin-top: 26px; }
+  .offer .price { font-family: var(--serif); font-size: 30px; }
+  .offer .price small { display: block; font-family: var(--sans); font-size: 12px; color: var(--ink-55); letter-spacing: .04em; }
+  .cta-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; border: 1px solid var(--ink); background: var(--ink); color: var(--cream); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--hair-strong); }
+  .btn.ghost:hover { border-color: var(--ink); }
+  .hero-media { position: relative; min-height: 340px; background: var(--cream-deep); border-left: 1px solid var(--hair); display: grid; place-items: center; overflow: hidden; }
+  @media (max-width: 899px) { .hero-media { border-left: 0; border-top: 1px solid var(--hair); min-height: 260px; } }
+  .hero-media .ph { text-align: center; color: var(--ink-40); font-family: var(--serif); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+  .rating-pill { position: absolute; left: 24px; bottom: 24px; background: var(--cream); border: 1px solid var(--hair-strong); padding: 10px 14px; font-size: 12.5px; display: flex; gap: 8px; align-items: center; }
+  .stars { color: var(--gold); letter-spacing: .1em; }
+
+  /* ---------- section scaffolding ---------- */
+  section { padding: 64px 0; border-bottom: 1px solid var(--hair); }
+  .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+  .sec-head h2 { font-size: clamp(22px, 3vw, 30px); }
+  .sec-head .more { font-size: 13px; color: var(--ink-55); border-bottom: 1px solid var(--hair-strong); padding-bottom: 2px; }
+  .note { font-size: 12.5px; color: var(--ink-55); margin-top: 10px; }
+
+  /* ---------- audience tiles ---------- */
+  .aud-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (min-width: 760px) { .aud-grid { grid-template-columns: repeat(5, 1fr); } }
+  .aud-tile { border: 1px solid var(--hair); background: #fff; padding: 22px 18px; display: flex; flex-direction: column; gap: 6px; min-height: 108px; justify-content: flex-end; }
+  .aud-tile:hover { border-color: var(--hair-strong); }
+  .aud-tile b { font-family: var(--serif); font-size: 17px; font-weight: 400; }
+  .aud-tile span { font-size: 12px; color: var(--ink-55); }
+
+  /* ---------- product card (decision-ready) ---------- */
+  .grid-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (min-width: 760px) { .grid-cards { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
+  .card { background: #fff; border: 1px solid var(--hair); display: flex; flex-direction: column; }
+  .card .thumb { position: relative; aspect-ratio: 4/5; background: var(--cream-deep); display: grid; place-items: center; border-bottom: 1px solid var(--hair); }
+  .card .thumb .ph { font-family: var(--serif); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-40); text-align: center; padding: 0 16px; }
+  .badge { position: absolute; top: 12px; left: 12px; background: var(--ink); color: var(--cream); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; }
+  .badge.save { left: auto; right: 12px; background: var(--gold); }
+  .card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .inspired { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+  .card-body h3 { font-family: var(--sans); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
+  .card-rating { font-size: 12px; color: var(--ink-55); display: flex; gap: 6px; align-items: center; }
+  .card-price { display: flex; align-items: baseline; gap: 9px; margin-top: 2px; }
+  .card-price .now { font-family: var(--serif); font-size: 19px; }
+  .card-price .was { font-size: 12.5px; color: var(--ink-40); text-decoration: line-through; }
+  .card-price .from { font-size: 11.5px; color: var(--ink-55); }
+  .card .buy { margin-top: auto; border: 1px solid var(--ink); background: transparent; padding: 12px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .card .buy:hover { background: var(--ink); color: var(--cream); }
+  .card.typographic .thumb { background: var(--cream); }
+  .card.typographic .thumb .mark { font-family: var(--serif); font-size: 26px; letter-spacing: .06em; }
+  .card.typographic .thumb .house { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-55); }
+
+  /* ---------- bundle band ---------- */
+  .band { background: var(--ink); color: var(--cream); }
+  .band .inner { display: grid; gap: 28px; padding: 56px 0; }
+  @media (min-width: 900px) { .band .inner { grid-template-columns: 1fr 1fr; align-items: center; } }
+  .band h2 { font-size: clamp(24px, 3.4vw, 34px); color: var(--cream); }
+  .band p { color: rgba(248,245,240,.72); max-width: 48ch; }
+  .steps { display: grid; gap: 0; margin-top: 8px; }
+  .step { display: flex; gap: 16px; padding: 14px 0; border-top: 1px solid rgba(248,245,240,.16); font-size: 13.5px; }
+  .step b { font-family: var(--serif); font-weight: 400; color: var(--gold); min-width: 22px; }
+  .band .btn { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+
+  /* ---------- social proof ---------- */
+  .proof { display: grid; gap: 18px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) { .proof { grid-template-columns: repeat(4, 1fr); } }
+  .proof .item { border: 1px solid var(--hair); background: #fff; padding: 20px; }
+  .proof .num { font-family: var(--serif); font-size: 26px; }
+  .proof .lbl { font-size: 12.5px; color: var(--ink-55); }
+  .quotes { display: grid; gap: 18px; margin-top: 24px; }
+  @media (min-width: 760px) { .quotes { grid-template-columns: repeat(3, 1fr); } }
+  .quote { border-left: 2px solid var(--gold); padding: 4px 0 4px 16px; font-size: 14px; color: var(--ink-70); }
+  .quote cite { display: block; margin-top: 8px; font-style: normal; font-size: 12px; color: var(--ink-55); }
+
+  /* ---------- PDP ---------- */
+  .pdp { display: grid; gap: 36px; }
+  @media (min-width: 900px) { .pdp { grid-template-columns: 1fr 460px; } }
+  .pdp-media { background: var(--cream-deep); border: 1px solid var(--hair); aspect-ratio: 4/5; display: grid; place-items: center; }
+  .pdp-media .ph { font-family: var(--serif); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-40); }
+  .buybox { border: 1px solid var(--hair); background: #fff; padding: 26px; align-self: start; }
+  .buybox h3 { font-size: clamp(22px, 3vw, 28px); }
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .size { border: 1px solid var(--hair-strong); padding: 10px 14px; font-size: 13px; cursor: pointer; background: #fff; }
+  .size[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--cream); }
+  .size[disabled] { color: var(--ink-40); background: repeating-linear-gradient(45deg, #fff, #fff 6px, var(--cream-deep) 6px, var(--cream-deep) 12px); cursor: not-allowed; }
+  .buybox .now { font-family: var(--serif); font-size: 30px; display: flex; align-items: baseline; gap: 12px; margin-top: 20px; }
+  .buybox .now .was { font-family: var(--sans); font-size: 14px; color: var(--ink-40); text-decoration: line-through; }
+  .buybox .add { width: 100%; margin-top: 20px; }
+  .promises { margin-top: 18px; display: grid; gap: 9px; font-size: 13px; color: var(--ink-70); }
+  .promises div { display: flex; gap: 10px; }
+  .promises .d { color: var(--gold); }
+
+  /* ---------- mobile frame ---------- */
+  .frames { display: grid; gap: 34px; }
+  @media (min-width: 900px) { .frames { grid-template-columns: 390px 1fr; align-items: start; } }
+  .phone { width: 390px; border: 1px solid var(--hair-strong); background: var(--cream); overflow: hidden; }
+  .phone .bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--hair); font-size: 12px; }
+  .phone .announce-m { background: var(--ink); color: var(--cream); font-size: 11px; padding: 7px 14px; }
+  .phone .sticky { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--hair); background: var(--cream); }
+  .phone .sticky button { border: 0; background: transparent; padding: 13px 6px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; }
+  .phone .sticky button + button { border-left: 1px solid var(--hair); }
+  .phone .scroller { padding: 14px; display: grid; gap: 14px; }
+  .phone .hero-m h1 { font-size: 27px; line-height: 1.06; }
+  .phone .card .thumb { aspect-ratio: 1/1; }
+  .phone .add-first { position: sticky; top: 0; z-index: 5; background: var(--ink); color: var(--cream); text-align: center; padding: 12px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+
+  .legacy { border: 1px dashed var(--hair-strong); padding: 16px; font-size: 12.5px; color: var(--ink-55); }
+  footer { padding: 40px 0 72px; }
+  .foot-grid { display: grid; gap: 22px; grid-template-columns: repeat(2, 1fr); font-size: 13px; color: var(--ink-70); }
+  @media (min-width: 760px) { .foot-grid { grid-template-columns: repeat(4, 1fr); } }
+  .foot-grid b { display: block; font-family: var(--serif); font-size: 14px; color: var(--ink); margin-bottom: 8px; font-weight: 400; }
+  .foot-grid a { display: block; padding: 3px 0; }
+</style>
+</head>
+<body>
+
+<div class="reviewbar">
+  <div class="wrap">
+    <b>REDESIGN MOCKUP — not the live site.</b>
+    <span>Skeleton borrowed from Scentimental, skin and typography kept from Cre8scent.</span>
+    <span class="tag">for review</span>
+  </div>
+</div>
+
+<!-- ================= HEADER + AUDIENCE NAV ================= -->
+<div class="announce">
+  <div class="wrap">
+    <span>Free delivery on orders over R1 000 · nationwide</span>
+    <span>WhatsApp us: 060 000 0000 · Mon–Sat, 9–17</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="toprow">
+      <div class="logo">Cre8scent</div>
+      <div class="searchbar">
+        <input placeholder="Search a scent, a house, or an occasion…" aria-label="Search" />
+        <button>Search</button>
+      </div>
+      <nav class="top-utils">
+        <a href="#">Track order</a>
+        <a href="#">Scent quiz</a>
+        <a href="#">Wishlist</a>
+        <a href="#">Bag (0)</a>
+      </nav>
+    </div>
+    <nav class="audnav" aria-label="Shop by audience">
+      <a href="#" aria-current="page">For Her</a>
+      <a href="#">For Him</a>
+      <a href="#">Unisex</a>
+      <a href="#">Bestsellers</a>
+      <a href="#">Sets &amp; Bundles</a>
+      <a href="#">Home fragrance</a>
+      <a href="#" class="bundle">Build your own box</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Designer-inspired eau de parfum · hand-blended in South Africa</p>
+      <h1>Your signature scent,<br /><em>from R99.</em></h1>
+      <p class="sub">
+        Ninety designer profiles, poured in 30ml to 100ml. Try a small bottle first — if it isn't you,
+        come back and we'll swap the family, not the bottle.
+      </p>
+      <div class="offer">
+        <div class="price">R99 <small>30ml · 5 sizes to 100ml</small></div>
+        <div class="price">R249 <small>100ml · most popular</small></div>
+      </div>
+      <div class="cta-row">
+        <button class="btn">Shop bestsellers</button>
+        <button class="btn ghost">Take the 60-second scent quiz</button>
+      </div>
+      <div class="rating-pill" style="position:static;display:inline-flex;margin-top:26px;">
+        <span class="stars">★★★★★</span>
+        <span><b>412</b> reviews · 4.7 average · 12 400 bottles shipped</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-media">
+    <div class="ph">hero photography · bottle + campaign still</div>
+  </div>
+</div>
+
+<!-- ================= SHOP BY AUDIENCE ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Where do you want to start?</h2>
+      <a class="more" href="#">Everything, A–Z</a>
+    </div>
+    <div class="aud-grid">
+      <a class="aud-tile" href="#"><b>For Her</b><span>170 scents · from R99</span></a>
+      <a class="aud-tile" href="#"><b>For Him</b><span>128 scents · from R99</span></a>
+      <a class="aud-tile" href="#"><b>Unisex</b><span>29 scents · from R99</span></a>
+      <a class="aud-tile" href="#"><b>Sets &amp; Bundles</b><span>Build a 5-piece box</span></a>
+      <a class="aud-tile" href="#"><b>Home</b><span>Diffusers, candles, melts</span></a>
+    </div>
+    <p class="note">Counts come from the live catalogue (332 products live, 323 still to be priced before this section can publish those numbers honestly).</p>
+  </div>
+</section>
+
+<!-- ================= BESTSELLERS RAIL ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Bestsellers this month</h2>
+      <a class="more" href="#">See all 12</a>
+    </div>
+    <div class="grid-cards">
+      <article class="card">
+        <div class="thumb">
+          <span class="badge">Bestseller</span>
+          <span class="badge save">−20%</span>
+          <div class="ph">product photo<br />30 / 50 / 100ml</div>
+        </div>
+        <div class="card-body">
+          <span class="inspired">Inspired by Carolina Herrera</span>
+          <h3>212 VIP</h3>
+          <span class="card-rating"><span class="stars">★★★★★</span> 4.8 (37)</span>
+          <span class="card-price"><span class="now">R99</span><span class="was">R129</span><span class="from">30ml</span></span>
+          <button class="buy">Buy now</button>
+        </div>
+      </article>
+
+      <article class="card typographic">
+        <div class="thumb">
+          <div>
+            <div class="mark">CT</div>
+            <div class="house">Inspired by Creed</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="inspired">Inspired by Creed</span>
+          <h3>Royal Oud Aventus</h3>
+          <span class="card-rating"><span class="stars">★★★★☆</span> 4.4 (12)</span>
+          <span class="card-price"><span class="now">R99</span><span class="from">30ml</span></span>
+          <button class="buy">Buy now</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb"><span class="badge">New</span><div class="ph">product photo</div></div>
+        <div class="card-body">
+          <span class="inspired">Inspired by Lattafa</span>
+          <h3>Khamrah</h3>
+          <span class="card-rating"><span class="stars">★★★★★</span> 4.9 (58)</span>
+          <span class="card-price"><span class="now">R99</span><span class="from">30ml</span></span>
+          <button class="buy">Buy now</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb"><div class="ph">product photo</div></div>
+        <div class="card-body">
+          <span class="inspired">Cre8scent home</span>
+          <h3>Black Oud diffuser</h3>
+          <span class="card-rating"><span class="stars">★★★★☆</span> 4.5 (9)</span>
+          <span class="card-price"><span class="now">R180</span><span class="from">150ml</span></span>
+          <button class="buy">Buy now</button>
+        </div>
+      </article>
+    </div>
+    <p class="note">
+      Card rule: house attribution, name, rating with count, one price with the anchor next to it, one button.
+      Short notes moved to the product page; photography or the monogram card — never a repeated logo.
+    </p>
+  </div>
+</section>
+
+<!-- ================= BUNDLE BAND ================= -->
+<div class="band">
+  <div class="wrap">
+    <div class="inner">
+      <div>
+        <p class="eyebrow" style="color:rgba(248,245,240,.6)">Sets &amp; bundles</p>
+        <h2>Build your own box. Five 30ml, R420.</h2>
+        <p style="margin-top:14px">
+          Buy the try-before-you-commit box and the fifth bottle is discounted. Swap any scent that doesn't land
+          within 30 days.
+        </p>
+        <div class="cta-row"><button class="btn">Start a box</button></div>
+      </div>
+      <div class="steps">
+        <div class="step"><b>1</b><span>Pick five 30ml bottles across Her, Him or Unisex.</span></div>
+        <div class="step"><b>2</b><span>We pour and courier them together — free over R1 000.</span></div>
+        <div class="step"><b>3</b><span>Keep what you love, swap what you don't within 30 days.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SOCIAL PROOF ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Why people keep coming back</h2></div>
+    <div class="proof">
+      <div class="item"><div class="num">4.7<small style="font-size:14px;color:var(--ink-55)">/5</small></div><div class="lbl">412 verified reviews</div></div>
+      <div class="item"><div class="num">12 400</div><div class="lbl">bottles shipped since 2024</div></div>
+      <div class="item"><div class="num">30 days</div><div class="lbl">returns on sealed bottles</div></div>
+      <div class="item"><div class="num">R1 000</div><div class="lbl">order value for free delivery</div></div>
+    </div>
+    <div class="quotes">
+      <blockquote class="quote">"Ordered the 30ml to test it. Went back for the 100ml the same week."<cite>Thandiwe M · Johannesburg</cite></blockquote>
+      <blockquote class="quote">"Smells closer to the original than the stuff I bought at four times the price."<cite>Riaan P · Pretoria</cite></blockquote>
+      <blockquote class="quote">"The quiz picked something I'd never have chosen. It's now my daily."<cite>Zanele D · Durban</cite></blockquote>
+    </div>
+    <p class="note">Placeholder quotes — these need to be real, collected at checkout or by email. Reviews and counts are the biggest gap versus Scentimental, who lead with them.</p>
+  </div>
+</section>
+
+<!-- ================= PDP ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Product page — the buy box</h2></div>
+    <div class="pdp">
+      <div class="pdp-media"><span class="ph">product gallery · 4:5</span></div>
+      <div class="buybox">
+        <span class="inspired">Inspired by Carolina Herrera</span>
+        <h3>212 VIP</h3>
+        <span class="card-rating" style="margin-top:8px"><span class="stars">★★★★★</span> 4.8 · 37 reviews</span>
+        <div class="sizes">
+          <button class="size" aria-pressed="true">30ml</button>
+          <button class="size">50ml</button>
+          <button class="size">60ml</button>
+          <button class="size">80ml</button>
+          <button class="size">100ml</button>
+          <button class="size">Car diffuser</button>
+        </div>
+        <div class="now">R99 <span class="was">R129</span></div>
+        <button class="btn add">Add to bag · R99</button>
+        <div class="promises">
+          <div><span class="d">◆</span><span>Free delivery over R1 000 — this order is R99, delivery from R50</span></div>
+          <div><span class="d">◆</span><span>Dispatched in 1–2 business days · Track order in the footer</span></div>
+          <div><span class="d">◆</span><span>30-day returns on sealed bottles</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="note">
+      Size chips carry their own price and an "Unavailable" state (hatched, disabled) instead of silently
+      keeping the previous price — that is the 212 VIP bug: 100ml had no price and quoted the 30ml one.
+      Add to bag sits in the buy box, which is above the fold on mobile; nothing scrolls two screens to buy.
+    </p>
+  </div>
+</section>
+
+<!-- ================= MOBILE ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Mobile — where the bug was</h2></div>
+    <div class="frames">
+      <div class="phone">
+        <div class="bar"><span>☰ &nbsp;Cre8scent</span><span>Search &nbsp; Bag(0)</span></div>
+        <div class="announce-m">Free delivery over R1 000</div>
+        <div class="scroller">
+          <div class="hero-m">
+            <p class="eyebrow">Designer-inspired · from R99</p>
+            <h1>Your signature scent, <em style="font-style:normal;color:var(--gold)">from R99.</em></h1>
+            <p style="font-size:13px;color:var(--ink-70);margin:10px 0 0">30ml to 100ml, hand-blended in South Africa.</p>
+          </div>
+          <button class="btn" style="width:100%">Shop bestsellers</button>
+          <div class="aud-grid" style="grid-template-columns:repeat(2,1fr)">
+            <a class="aud-tile" href="#"><b>For Her</b><span>170</span></a>
+            <a class="aud-tile" href="#"><b>For Him</b><span>128</span></a>
+          </div>
+          <article class="card">
+            <div class="thumb"><span class="badge">Bestseller</span><div class="ph">photo</div></div>
+            <div class="card-body">
+              <span class="inspired">Inspired by Carolina Herrera</span>
+              <h3>212 VIP</h3>
+              <span class="card-rating"><span class="stars">★★★★★</span> 4.8 (37)</span>
+              <span class="card-price"><span class="now">R99</span><span class="was">R129</span></span>
+              <button class="buy">Buy now</button>
+            </div>
+          </article>
+        </div>
+        <div class="sticky">
+          <button>Wishlist</button><button>Bag · 1</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="phone" style="width:100%;max-width:520px">
+          <div class="add-first">Add to bag · R99</div>
+          <div class="scroller">
+            <div class="pdp-media" style="aspect-ratio:1/1"><span class="ph">gallery</span></div>
+            <div>
+              <span class="inspired">Inspired by Carolina Herrera</span>
+              <h3 style="font-family:var(--serif);font-size:22px;font-weight:400">212 VIP</h3>
+              <div class="sizes" style="margin-top:12px">
+                <button class="size" aria-pressed="true">30ml</button>
+                <button class="size">50ml</button>
+                <button class="size" disabled>60ml</button>
+              </div>
+              <div class="now" style="font-family:var(--serif);font-size:26px;margin-top:14px">R99</div>
+            </div>
+            <div class="promises" style="font-size:12px">
+              <div><span class="d">◆</span><span>Free delivery over R1 000</span></div>
+              <div><span class="d">◆</span><span>30-day returns on sealed bottles</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="note">
+          The buy action stays pinned at the top of the scroll on mobile (and again above the bottom bar as you
+          go deeper), so "Add to bag" is never two screens away. Compare: today's page puts it below the fold
+          and the bottom bar overlaps cookie-consent buttons.
+        </p>
+        <div class="legacy" style="margin-top:18px">
+          Bottom bar keeps Wishlist / Bag / Sign in — it just stops covering anything else on the page.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <b>Shop</b>
+        <a href="#">For Her</a><a href="#">For Him</a><a href="#">Unisex</a><a href="#">Sets &amp; bundles</a>
+      </div>
+      <div>
+        <b>Help</b>
+        <a href="#">Track my order</a><a href="#">Delivery &amp; returns</a><a href="#">WhatsApp support</a><a href="#">Contact</a>
+      </div>
+      <div>
+        <b>About</b>
+        <a href="#">How we blend</a><a href="#">Inspired-by disclaimer</a><a href="#">Reviews</a>
+      </div>
+      <div>
+        <b>Stay in touch</b>
+        <a href="#">New arrivals, monthly</a><a href="#">Scent quiz</a>
+      </div>
+    </div>
+    <p class="note" style="margin-top:26px">
+      Cre8scent is not affiliated with, endorsed by, or connected to any of the designer houses referenced.
+      All trademarks belong to their owners. Every fragrance is our own interpretation.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
