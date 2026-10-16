@@ -31,23 +31,44 @@
   .reviewbar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 10px 24px; }
   .tag { border: 1px solid rgba(248,245,240,.35); border-radius: 999px; padding: 2px 10px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
 
-  .announce { background: var(--ink); color: var(--cream); font-size: 12.5px; }
-  .announce .wrap { display: flex; gap: 24px; justify-content: space-between; padding: 9px 24px; }
-  .announce span:last-child { opacity: .75; }
-  @media (max-width: 640px) { .announce span:last-child { display: none; } }
+  /* ---------------- promo bar — copied from the live storefront ----------------
+     components/promo/promo-banner.tsx + the .promo-banner-* rules in app/globals.css:
+     black bar, 11px uppercase Inter at .14em, the same five messages scrolling
+     right-to-left over 42s, paused on hover, with the close button on the right.
+     The promo bar and the header share one sticky wrapper so both pin to the top. */
+  .masthead { position: sticky; top: 0; z-index: 45; }
+  .promo { background: #000; border-bottom: 1px solid var(--hair); overflow: hidden; }
+  .promo[hidden] { display: none; }
+  .promo-inner { position: relative; display: flex; align-items: center; gap: 16px; padding: 10px 24px; }
+  @media (min-width: 768px) { .promo-inner { padding: 10px 40px; } }
+  .promo-mask { width: 100%; overflow: hidden; padding-right: 40px; -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
+  @media (min-width: 768px) { .promo-mask { padding-right: 48px; } }
+  .promo-track { display: flex; width: max-content; white-space: nowrap; animation: promoScroll 42s linear infinite; will-change: transform; }
+  .promo-mask:hover .promo-track { animation-play-state: paused; }
+  .promo-item { display: inline-flex; align-items: center; gap: .5rem; margin-right: 2.25rem; font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.8); }
+  @media (min-width: 768px) { .promo-item { font-size: 11px; } }
+  .promo-item::after { content: "•"; color: color-mix(in srgb, var(--ink) 35%, transparent); margin-left: .75rem; }
+  @keyframes promoScroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+  .promo-close { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 4px; color: rgba(255,255,255,.4); cursor: pointer; line-height: 0; }
+  .promo-close:hover { color: rgba(255,255,255,.8); }
+  .promo-close svg { display: block; width: 14px; height: 14px; }
+  @media (min-width: 768px) { .promo-close { right: 24px; } }
 
-  header { background: var(--cream); border-bottom: 1px solid var(--hair); position: sticky; top: 0; z-index: 40; }
+  header { background: var(--cream); border-bottom: 1px solid var(--hair); }
   .toprow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; }
   /* Brand mark — the live https://cre8scent.co.za/logo-light.png (the plain wordmark,
      not the floral logo.png). The asset is a 1024x1024 square whose artwork only
      occupies x124-1005 / y258-617; everything around it is empty transparent padding,
      so a plain <img height="46"> renders a tiny wordmark floating in a big box.
-     Crop that padding in CSS instead: --s scales the whole source, so the three
-     sizes below are the same crop at 176px / 132px / 78px wide. */
-  .logo, .logo-foot, .logo-mini { position: relative; display: block; overflow: hidden; --s: 0.1996; width: calc(882px * var(--s)); height: calc(360px * var(--s)); }
+     Crop that padding in CSS instead: --s scales the whole source, and the box below
+     is the ink box plus a 6px safety margin (x118-1012 / y252-624).
+     max-width:none is load-bearing — the global `img { max-width: 100% }` clamps this
+     absolutely-positioned image to the container width, which shrinks the artwork
+     inside the window and slices the top of the wordmark off. */
+  .logo, .logo-foot, .logo-mini { position: relative; display: block; overflow: hidden; --s: 0.19955; width: calc(894px * var(--s)); height: calc(372px * var(--s)); }
   .logo-foot { --s: 0.1497; }
   .logo-mini { --s: 0.0884; display: inline-block; vertical-align: middle; }
-  .logo img, .logo-foot img, .logo-mini img { position: absolute; left: calc(-124px * var(--s)); top: calc(-258px * var(--s)); width: calc(1024px * var(--s)); height: auto; }
+  .logo img, .logo-foot img, .logo-mini img { position: absolute; max-width: none; left: calc(-118px * var(--s)); top: calc(-252px * var(--s)); width: calc(1024px * var(--s)); height: calc(1024px * var(--s)); }
   .logo-fallback { font-family: var(--serif); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; }
   .searchbar { flex: 1; max-width: 420px; display: flex; border: 1px solid var(--hair-strong); }
   .searchbar input { flex: 1; border: 0; background: transparent; padding: 10px 14px; font: inherit; color: inherit; outline: none; }
@@ -208,6 +229,7 @@
     .slide, .slide.on, .slide-img, .slide-copy { transition: none; }
     .slide-img, .slide.on .slide-img { transform: none; }
     .hero-dots button[aria-current]::after { animation: none; transform: scaleX(1); }
+    .promo-track { animation: none; }
   }
 </style>
 </head>
@@ -217,19 +239,37 @@
   <div class="wrap">
     <b>REDESIGN MOCKUP — not the live site.</b>
     <span>Real Cre8scent content: live banner images and copy, the 9 priced products with their real photos and sizes, real subcategory art, real support line.</span>
-    <span>Batch 2: live <code>logo-light.png</code> wordmark, Cinzel category row (Brands → Gift Sets &amp; Baskets), cross-fading hero.</span>
-    <span class="tag">batch 2 · for review</span>
+    <span>Batch 3: promo bar replaced with the live storefront's marquee and pinned sticky with the navbar; navbar logo no longer clipped.</span>
+    <span class="tag">batch 3 · for review</span>
   </div>
 </div>
 
-<div class="announce">
-  <div class="wrap">
-    <span>Free delivery on orders over R1 000 · nationwide</span>
-    <span>WhatsApp +27 73 061 0984 · Mon–Sat, 9–17</span>
+<div class="masthead">
+  <!-- Promo bar — the live storefront's PromoBanner: same five messages, 42s loop,
+       hover-pause, close button. The message list is duplicated so the -50% scroll loops. -->
+  <div class="promo" id="promo">
+    <div class="promo-inner">
+      <div class="promo-mask">
+        <div class="promo-track">
+          <span class="promo-item">Complimentary samples with every order over R500</span>
+          <span class="promo-item">New arrivals — niche &amp; designer fragrances added weekly</span>
+          <span class="promo-item">Free delivery on orders over R1 000 nationwide</span>
+          <span class="promo-item">Discover your signature scent — shop women's, men's &amp; unisex</span>
+          <span class="promo-item">Gift wrapping available at checkout</span>
+          <span class="promo-item">Complimentary samples with every order over R500</span>
+          <span class="promo-item">New arrivals — niche &amp; designer fragrances added weekly</span>
+          <span class="promo-item">Free delivery on orders over R1 000 nationwide</span>
+          <span class="promo-item">Discover your signature scent — shop women's, men's &amp; unisex</span>
+          <span class="promo-item">Gift wrapping available at checkout</span>
+        </div>
+      </div>
+      <button class="promo-close" type="button" aria-label="Close banner" id="promo-close">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
   </div>
-</div>
 
-<header>
+  <header>
   <div class="wrap">
     <div class="toprow">
       <a class="logo" href="#" aria-label="Cre8scent home">
@@ -255,7 +295,8 @@
       <a href="#">Gift Sets &amp; Baskets</a>
     </nav>
   </div>
-</header>
+  </header>
+</div><!-- /masthead: promo bar + navbar pin together -->
 
 <!-- ============ HERO: the four live banners ============ -->
 <div class="hero" id="hero">
@@ -720,6 +761,14 @@
     function sync() { nav.classList.toggle('overflowing', nav.scrollWidth - nav.clientWidth > 2); }
     sync();
     window.addEventListener('resize', sync);
+  })();
+
+  // Promo bar close button — same behaviour as the live PromoBanner (it unmounts itself).
+  (function () {
+    var bar = document.getElementById('promo');
+    var btn = document.getElementById('promo-close');
+    if (!bar || !btn) return;
+    btn.addEventListener('click', function () { bar.hidden = true; });
   })();
 </script>
 
