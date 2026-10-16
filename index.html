@@ -14,6 +14,7 @@
     --ink: #1B1210; --ink-70: rgba(27,18,16,.72); --ink-55: rgba(27,18,16,.55);
     --ink-40: rgba(27,18,16,.4); --hair: rgba(27,18,16,.08); --hair-strong: rgba(27,18,16,.14);
     --gold: #8A6A3B;
+    --slide-ms: 7000ms; /* hero autoplay dwell — keep in sync with AUTOPLAY_MS in the script below */
     --serif: "Cinzel", Georgia, serif;
     --sans: Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
   }
@@ -37,7 +38,16 @@
 
   header { background: var(--cream); border-bottom: 1px solid var(--hair); position: sticky; top: 0; z-index: 40; }
   .toprow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; }
-  .logo img { height: 46px; width: auto; }
+  /* Brand mark — the live https://cre8scent.co.za/logo-light.png (the plain wordmark,
+     not the floral logo.png). The asset is a 1024x1024 square whose artwork only
+     occupies x124-1005 / y258-617; everything around it is empty transparent padding,
+     so a plain <img height="46"> renders a tiny wordmark floating in a big box.
+     Crop that padding in CSS instead: --s scales the whole source, so the three
+     sizes below are the same crop at 176px / 132px / 78px wide. */
+  .logo, .logo-foot, .logo-mini { position: relative; display: block; overflow: hidden; --s: 0.1996; width: calc(882px * var(--s)); height: calc(360px * var(--s)); }
+  .logo-foot { --s: 0.1497; }
+  .logo-mini { --s: 0.0884; display: inline-block; vertical-align: middle; }
+  .logo img, .logo-foot img, .logo-mini img { position: absolute; left: calc(-124px * var(--s)); top: calc(-258px * var(--s)); width: calc(1024px * var(--s)); height: auto; }
   .logo-fallback { font-family: var(--serif); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; }
   .searchbar { flex: 1; max-width: 420px; display: flex; border: 1px solid var(--hair-strong); }
   .searchbar input { flex: 1; border: 0; background: transparent; padding: 10px 14px; font: inherit; color: inherit; outline: none; }
@@ -45,27 +55,42 @@
   @media (max-width: 900px) { .searchbar { display: none; } }
   .top-utils { display: flex; gap: 20px; font-size: 13px; color: var(--ink-70); align-items: center; }
   .top-utils a:hover { color: var(--ink); }
-  .audnav { display: flex; gap: 26px; padding: 10px 0 0; font-size: 14px; overflow-x: auto; scrollbar-width: none; }
+  /* Category row — Cinzel, one step up in size so it reads as the shop's spine. */
+  .audnav { display: flex; gap: 30px; padding: 14px 0 0; font-family: var(--serif); font-size: 16.5px; overflow-x: auto; scrollbar-width: none; }
   .audnav::-webkit-scrollbar { display: none; }
-  .audnav a { padding-bottom: 12px; border-bottom: 2px solid transparent; white-space: nowrap; color: var(--ink-70); }
+  .audnav a { padding-bottom: 14px; border-bottom: 2px solid transparent; white-space: nowrap; color: var(--ink-70); }
+  @media (max-width: 1120px) { .audnav { gap: 22px; font-size: 15px; } }
+  @media (max-width: 880px) { .audnav { gap: 18px; font-size: 14.5px; } }
+  /* Six Cinzel labels don't fit below ~1040px, so the row scrolls: fade the trailing
+     edge (JS adds .overflowing only when it actually overflows) instead of letting
+     "Gift Sets & Baskets" silently vanish off the right. */
+  .audnav.overflowing { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); }
   .audnav a[aria-current] { color: var(--ink); border-bottom-color: var(--ink); }
   .audnav a:hover { color: var(--ink); }
   .audnav .gold { color: var(--gold); }
 
-  /* ---------------- hero carousel (real banners) ---------------- */
-  .hero { position: relative; border-bottom: 1px solid var(--hair); background: var(--cream-deep); overflow: hidden; }
-  .slide { display: none; position: relative; min-height: 540px; }
-  .slide.on { display: block; }
-  .slide-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .96; }
+  /* ---------------- hero carousel (real banners) ----------------
+     Slides are stacked in one grid cell so the hero height is driven by the tallest
+     slide (absolute positioning would clip the copy on narrow screens), and the
+     swap is a 900ms cross-fade instead of a display:none cut. The headline block
+     rises in behind the fade, and the image settles from a 1.06 push. */
+  .hero { position: relative; display: grid; border-bottom: 1px solid var(--hair); background: var(--cream-deep); overflow: hidden; }
+  .slide { grid-area: 1 / 1; position: relative; min-height: 540px; opacity: 0; visibility: hidden; transition: opacity 900ms cubic-bezier(.33, 0, .2, 1), visibility 0s linear 900ms; }
+  .slide.on { opacity: 1; visibility: visible; transition: opacity 900ms cubic-bezier(.33, 0, .2, 1), visibility 0s linear 0s; }
+  .slide-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .96; transform: scale(1.06); transition: transform 7200ms linear; }
+  .slide.on .slide-img { transform: scale(1); }
   .slide-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(27,18,16,.82) 0%, rgba(27,18,16,.6) 42%, rgba(27,18,16,.18) 100%); }
-  .slide-copy { position: relative; padding: 84px 0 76px; max-width: 620px; color: var(--cream); }
+  .slide-copy { position: relative; padding: 84px 0 76px; max-width: 620px; color: var(--cream); opacity: 0; transform: translateY(18px); transition: opacity 800ms cubic-bezier(.33, 0, .2, 1) 140ms, transform 800ms cubic-bezier(.33, 0, .2, 1) 140ms; }
+  .slide.on .slide-copy { opacity: 1; transform: none; }
   .slide-copy .eyebrow { color: rgba(248,245,240,.72); }
   .slide-copy h1 { font-size: clamp(30px, 4.4vw, 52px); line-height: 1.05; margin: 16px 0 0; color:#fff; }
   .slide-copy p { color: rgba(248,245,240,.86); font-size: 16px; max-width: 46ch; margin: 16px 0 0; }
   .slide-ctas { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
   .hero-dots { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 8px; justify-content: center; z-index: 3; }
-  .hero-dots button { width: 30px; height: 3px; border: 0; background: rgba(248,245,240,.4); cursor: pointer; padding: 0; }
-  .hero-dots button[aria-current] { background: var(--cream); }
+  .hero-dots button { position: relative; width: 30px; height: 3px; border: 0; background: rgba(248,245,240,.4); cursor: pointer; padding: 0; overflow: hidden; }
+  .hero-dots button[aria-current]::after { content: ""; position: absolute; inset: 0; background: var(--cream); transform-origin: left center; animation: dotfill var(--slide-ms) linear forwards; }
+  .hero.paused .hero-dots button[aria-current]::after { animation-play-state: paused; }
+  @keyframes dotfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .hero-price { display: inline-flex; gap: 22px; align-items: flex-end; margin-top: 22px; color: #fff; }
   .hero-price .p { font-family: var(--serif); font-size: 28px; }
   .hero-price small { display: block; font-family: var(--sans); font-size: 11.5px; letter-spacing: .04em; color: rgba(248,245,240,.75); }
@@ -172,11 +197,18 @@
   @media (min-width: 760px) { .foot-grid { grid-template-columns: repeat(4, 1fr); } }
   .foot-grid b { display: block; font-family: var(--serif); font-size: 14px; color: var(--ink); margin-bottom: 8px; font-weight: 400; }
   .foot-grid a { display: block; padding: 3px 0; }
-  .foot-logo img { height: 40px; }
+  .foot-logo { color: var(--ink); }
   .news { display: flex; border: 1px solid var(--hair-strong); background: #fff; margin-top: 10px; max-width: 380px; }
   .news input { flex: 1; border: 0; padding: 11px 13px; font: inherit; background: transparent; outline: none; }
   .news button { border: 0; border-left: 1px solid var(--hair-strong); background: transparent; padding: 0 14px; font: inherit; cursor: pointer; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
   .disclaimer { font-size: 12px; color: var(--ink-55); max-width: 80ch; margin-top: 26px; }
+
+  /* The cross-fade is decoration, the copy rise is decoration — respect the OS setting. */
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .slide.on, .slide-img, .slide-copy { transition: none; }
+    .slide-img, .slide.on .slide-img { transform: none; }
+    .hero-dots button[aria-current]::after { animation: none; transform: scaleX(1); }
+  }
 </style>
 </head>
 <body>
@@ -185,7 +217,8 @@
   <div class="wrap">
     <b>REDESIGN MOCKUP — not the live site.</b>
     <span>Real Cre8scent content: live banner images and copy, the 9 priced products with their real photos and sizes, real subcategory art, real support line.</span>
-    <span class="tag">for review</span>
+    <span>Batch 2: live <code>logo-light.png</code> wordmark, Cinzel category row (Brands → Gift Sets &amp; Baskets), cross-fading hero.</span>
+    <span class="tag">batch 2 · for review</span>
   </div>
 </div>
 
@@ -200,7 +233,7 @@
   <div class="wrap">
     <div class="toprow">
       <a class="logo" href="#" aria-label="Cre8scent home">
-        <img src="https://cre8scent.co.za/logo.png" alt="Cre8scent" />
+        <img src="https://cre8scent.co.za/logo-light.png" alt="Cre8scent Fragrance" />
       </a>
       <div class="searchbar">
         <input placeholder="Search a scent, a house, or an occasion…" aria-label="Search" />
@@ -213,14 +246,13 @@
         <a href="#">Bag (0)</a>
       </nav>
     </div>
-    <nav class="audnav" aria-label="Shop by audience">
-      <a href="#" aria-current="page">For Her (170)</a>
-      <a href="#">For Him (128)</a>
-      <a href="#">Unisex (29)</a>
-      <a href="#">Bestsellers</a>
-      <a href="#">Home fragrance (3)</a>
-      <a href="#">Gifts &amp; baskets</a>
-      <a href="#" class="gold">Custom scents</a>
+    <nav class="audnav" aria-label="Shop by category">
+      <a href="#">Brands</a>
+      <a href="#" aria-current="page">Womens Perfumes</a>
+      <a href="#">Mens Perfumes</a>
+      <a href="#">Unisex Perfumes</a>
+      <a href="#">Home Fragrance</a>
+      <a href="#">Gift Sets &amp; Baskets</a>
     </nav>
   </div>
 </header>
@@ -547,7 +579,7 @@
     <div class="sec-head"><h2>Mobile</h2></div>
     <div class="frames">
       <div class="phone">
-        <div class="bar"><span>☰ &nbsp;<img src="https://cre8scent.co.za/logo.png" alt="Cre8scent" style="height:24px;display:inline-block;vertical-align:middle" /></span><span>Search &nbsp; Bag(0)</span></div>
+        <div class="bar"><span>☰ &nbsp;<span class="logo-mini"><img src="https://cre8scent.co.za/logo-light.png" alt="Cre8scent Fragrance" /></span></span><span>Search &nbsp; Bag(0)</span></div>
         <div class="announce-m">Free delivery over R1 000</div>
         <div class="scroller">
           <div class="hero-m">
@@ -616,7 +648,7 @@
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-logo">
-        <img src="https://cre8scent.co.za/logo.png" alt="Cre8scent" />
+        <span class="logo-foot"><img src="https://cre8scent.co.za/logo-light.png" alt="Cre8scent Fragrance" /></span>
         <p style="margin:12px 0 0">Hand-blended, designer-inspired fragrance. WhatsApp <a href="https://wa.me/27730610984" style="display:inline">+27 73 061 0984</a>.</p>
       </div>
       <div>
@@ -643,18 +675,25 @@
 </footer>
 
 <script>
-  // Real banner rotation - same four slides, in carouselPriority order.
+  // Banner carousel: the swap is a 900ms CSS cross-fade; here we run the clock,
+  // the dot progress bars, pause on hover/focus, and restart on a manual pick.
   (function () {
+    var AUTOPLAY_MS = 7000; // keep in sync with --slide-ms in :root
+    var hero = document.getElementById('hero');
     var slides = document.querySelectorAll('.slide');
     var dots = document.getElementById('dots');
-    if (!slides.length || !dots) return;
-    var i = 0;
+    if (!slides.length || !dots || !hero) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var i = 0, timer = null;
+
     for (var n = 0; n < slides.length; n++) {
       var b = document.createElement('button');
+      b.type = 'button';
       b.setAttribute('aria-label', 'Slide ' + (n + 1) + ' of ' + slides.length);
-      b.addEventListener('click', (function (k) { return function () { show(k); }; })(n));
+      b.addEventListener('click', (function (k) { return function () { show(k); play(); }; })(n));
       dots.appendChild(b);
     }
+
     function show(k) {
       i = (k + slides.length) % slides.length;
       slides.forEach(function (s, n) { s.classList.toggle('on', n === i); });
@@ -662,9 +701,25 @@
         if (n === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
       });
     }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function play() { stop(); if (!reduce) timer = setInterval(function () { show(i + 1); }, AUTOPLAY_MS); }
+
+    hero.addEventListener('mouseenter', function () { hero.classList.add('paused'); stop(); });
+    hero.addEventListener('mouseleave', function () { hero.classList.remove('paused'); play(); });
+    hero.addEventListener('focusin', function () { hero.classList.add('paused'); stop(); });
+    hero.addEventListener('focusout', function () { hero.classList.remove('paused'); play(); });
+
     show(0);
-    var timer = setInterval(function () { show(i + 1); }, 7000);
-    dots.addEventListener('click', function () { clearInterval(timer); });
+    play();
+  })();
+
+  // The category row scrolls below ~1040px; only show the trailing fade when it actually does.
+  (function () {
+    var nav = document.querySelector('.audnav');
+    if (!nav) return;
+    function sync() { nav.classList.toggle('overflowing', nav.scrollWidth - nav.clientWidth > 2); }
+    sync();
+    window.addEventListener('resize', sync);
   })();
 </script>
 
