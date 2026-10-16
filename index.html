@@ -55,7 +55,7 @@
   @media (min-width: 768px) { .promo-close { right: 24px; } }
 
   header { background: var(--cream); border-bottom: 1px solid var(--hair); }
-  .toprow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; }
+  .toprow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; flex-wrap: wrap; }
   /* Brand mark — the live https://cre8scent.co.za/logo-light.png (the plain wordmark,
      not the floral logo.png). The asset is a 1024x1024 square whose artwork only
      occupies x124-1005 / y258-617; everything around it is empty transparent padding,
@@ -65,9 +65,11 @@
      max-width:none is load-bearing — the global `img { max-width: 100% }` clamps this
      absolutely-positioned image to the container width, which shrinks the artwork
      inside the window and slices the top of the wordmark off. */
-  .logo, .logo-foot, .logo-mini { position: relative; display: block; overflow: hidden; --s: 0.19955; width: calc(894px * var(--s)); height: calc(372px * var(--s)); }
+  .logo, .logo-foot, .logo-mini { position: relative; display: block; overflow: hidden; flex: 0 0 auto; --s: 0.19955; width: calc(894px * var(--s)); height: calc(372px * var(--s)); }
   .logo-foot { --s: 0.1497; }
   .logo-mini { --s: 0.0884; display: inline-block; vertical-align: middle; }
+  /* Desktop navbar mark, dialled down: 150px of wordmark instead of 176px. */
+  @media (min-width: 900px) { .logo { --s: 0.1703; } }
   .logo img, .logo-foot img, .logo-mini img { position: absolute; max-width: none; left: calc(-118px * var(--s)); top: calc(-252px * var(--s)); width: calc(1024px * var(--s)); height: calc(1024px * var(--s)); }
   .logo-fallback { font-family: var(--serif); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; }
   .searchbar { flex: 1; max-width: 420px; display: flex; border: 1px solid var(--hair-strong); }
